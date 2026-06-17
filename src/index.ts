@@ -20,6 +20,10 @@ import {
   makeGetRemoteLinksTool,
 } from "./tools/get-remote-links.js";
 import { getDevInfoInputShape, makeGetDevInfoTool } from "./tools/get-dev-info.js";
+import {
+  searchIssuesInputShape,
+  makeSearchIssuesTool,
+} from "./tools/search-issues.js";
 
 async function main(): Promise<void> {
   const config = loadConfig();
@@ -35,7 +39,8 @@ async function main(): Promise<void> {
       capabilities: { tools: {} },
       instructions:
         "Read-only access to Jira Server/Data Center via a Personal Access Token. " +
-        "Use `list_fields` to discover custom field ids before requesting them via `get_issue.fields`.",
+        "Use `search_issues` to find issues with JQL, and `get_issue` to inspect one in full. " +
+        "Use `list_fields` to discover custom field ids before requesting them via the `fields` argument.",
     }
   );
 
@@ -49,6 +54,20 @@ async function main(): Promise<void> {
       inputSchema: getIssueInputShape,
     },
     makeGetIssueTool(client, fieldsCache) as never
+  );
+
+  server.registerTool(
+    "search_issues",
+    {
+      title: "Search Jira issues (JQL)",
+      description:
+        "Searches issues with a JQL query and returns matching issues with their fields. " +
+        "Supports paging (`startAt`, `max`), a `fields` subset, and `expand`. " +
+        "Custom field ids are surfaced under human-readable names by default. " +
+        "Returns the total match count alongside the returned page.",
+      inputSchema: searchIssuesInputShape,
+    },
+    makeSearchIssuesTool(client, fieldsCache) as never
   );
 
   server.registerTool(

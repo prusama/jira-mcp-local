@@ -71,6 +71,7 @@ All tools are read-only.
 
 | Tool | What it does |
 | --- | --- |
+| `search_issues` | Run a JQL query and return matching issues (with custom field human names). Supports paging (`startAt`, `max`), a `fields` subset, and `expand`. Reports the total match count. |
 | `get_issue` | Full issue: system fields, custom fields (with human names), subtasks, issue links, parent/epic. Supports `fields` and `expand`. |
 | `list_fields` | All Jira fields (system + custom) with id, name, type. Use to discover custom field ids (Story Points, Epic Link, Sprint, ...). Result is cached in-process; pass `refresh: true` to bypass. |
 | `get_worklogs` | All worklog entries (author, started, time spent, comment) plus total time logged. |
@@ -102,6 +103,7 @@ src/
   fields-cache.ts     # caches /rest/api/2/field for name resolution
   tools/
     common.ts                  # shared result/error helpers, response trimming
+    search-issues.ts
     get-issue.ts
     list-fields.ts
     get-worklogs.ts
